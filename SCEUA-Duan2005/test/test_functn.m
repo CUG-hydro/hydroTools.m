@@ -1,7 +1,7 @@
 clear;
 % global BESTX BESTF ICALL PX PF
 
-ifunc = 7;
+ifunc = 6;
 
 if ifunc==1
     % Goldstein-Price Function
@@ -64,5 +64,5 @@ iseed  = -1;
 iniflg = 0;
 ngs    = 2; % the number of complexes
 
-% [bestx, bestf] = sceua(x0, fn, bl,bu,maxn,kstop,pcento,peps,ngs,iseed,iniflg);
-[bestx, bestf] = sceua(x0, fn, bl, bu, maxn);
+% [bestx, bestf] = sceua(fn, x0, bl,bu,maxn,kstop,pcento,peps,ngs,iseed,iniflg);
+[bestx, bestf] = sceua(fn, x0, bl, bu, maxn);

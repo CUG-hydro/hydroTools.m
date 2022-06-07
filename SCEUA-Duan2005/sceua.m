@@ -1,4 +1,4 @@
-function [bestx, bestf, exitflag, output] = sceua(x0, fn, bl,bu,maxn,kstop,pcento,peps,ngs,iseed,iniflg)
+function [bestx, bestf, exitflag, output] = sceua(fn, x0, bl,bu,maxn,kstop,pcento,peps,ngs,iseed,iniflg)
 %% This is the subroutine implementing the SCE algorithm,
 % written by Q.Duan, 9/2004
 %
@@ -50,8 +50,8 @@ function [bestx, bestf, exitflag, output] = sceua(x0, fn, bl,bu,maxn,kstop,pcent
 % ```
 % global BESTX BESTF ICALL PX PF
 arguments
-    x0
     fn
+    x0
     bl
     bu
     % used the default parameter in rtop
@@ -101,13 +101,19 @@ nspl=npg;
 % mings=ngs;
 npt=npg*ngs;
 
-bound = bu-bl;
+% make sure x is a row matrix
+x0 = as_rowvec(x0);
+bu = as_rowvec(bu);
+bl = as_rowvec(bl);
+
+bound = bu - bl;
 
 % Create an initial population to fill array x(npt,nopt):
-rand('seed',iseed);
+rand('seed', iseed);
+
 x=zeros(npt,nopt);
 for i=1:npt
-    x(i,:)=bl+rand(1,nopt).*bound;
+    x(i,:) = bl + rand(1,nopt).*bound;
 end
 
 if iniflg==1; x(1,:)=x0; end
@@ -139,7 +145,7 @@ gnrng=exp(mean(log((max(x)-min(x))./bound)));
 % disp(['BESTF  : ' num2str(bestf), '; ' 'BESTX  : [' num2str(bestx), ']']);
 % disp(['WORSTF : ' num2str(worstf), '; ' 'WORSTX : [' num2str(worstx), ']']);
 % disp(' ');
-nloop = 0;
+% nloop = 0;
 fprintf('Iteration=%3d, nEvals=%3d, Best Cost = %.5f\n', nloop, icall, bestf)
 
 % Check for convergency;
@@ -259,4 +265,30 @@ disp(['THE BEST POINT HAS IMPROVED IN LAST ' num2str(kstop) ' LOOPS BY ', ...
     num2str(criter_change) '%']);
 
 % END of Subroutine sceua
+end
+
+function bool = is_rowvec(x)
+    [nrow, ncol] = size(x);
+    bool = nrow == 1 && ncol > 1;
+end
+
+function bool = is_colvec(x)
+    [nrow, ncol] = size(x);
+    bool = ncol == 1 && nrow > 1;
+end
+
+function x = as_rowvec(x)
+    if is_rowvec(x)
+       % nothing 
+    elseif is_colvec(x)
+        x = x';  
+    end
+end
+
+function x = as_colvec(x)
+    if is_colvec(x)
+       % nothing 
+    elseif is_rowvec(x)
+        x = x';  
+    end
 end
