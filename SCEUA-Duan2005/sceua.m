@@ -23,6 +23,27 @@ function [bestx,bestf] = sceua(x0,bl,bu,maxn,kstop,pcento,peps,ngs,iseed,iniflg)
 %  kstop = maximum number of evolution loops before convergency
 %  percento = the percentage change allowed in kstop loops before convergency
 
+% By Kong Dongdong, 20220607
+
+% https://ww2.mathworks.cn/help/matlab/ref/arguments.html
+% Require MATLAB ≥ 2019b
+% 
+%% References:
+% 1. https://www.rdocumentation.org/packages/rtop/versions/0.5-14/topics/sceua
+% 
+% sceua(OFUN, pars, lower, upper, maxn = 10000, kstop = 5, pcento = 0.01,
+%   ngs = 5, npg = 5, nps = 5, nspl = 5, mings = 5, iniflg = 1, iprint = 0, iround = 3, 
+%   peps = 0.0001, plog = rep(FALSE,length(pars)), implicit = NULL, timeout = NULL, ...)
+arguments
+    maxn = 500
+    kstop = 5
+    pcento = 0.01
+    peps = 0.0001
+    ngs = 5
+    iseed 
+    iniflg = 1
+end
+
 % LIST OF LOCAL VARIABLES
 %    x(.,.) = coordinates of points in the population
 %    xf(.) = function values of x(.,.)
