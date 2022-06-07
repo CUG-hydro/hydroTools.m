@@ -1,5 +1,5 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-function f = functn(nopt,x)
+function f = functn(x)
 %
 % This is the Goldstein-Price Function
 % Bound X1=[-2,2], X2=[-2,2]

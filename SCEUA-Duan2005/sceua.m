@@ -1,36 +1,54 @@
-function [bestx,bestf] = sceua(x0, fn, bl,bu,maxn,kstop,pcento,peps,ngs,iseed,iniflg)
+function [bestx, bestf, exitflag, output] = sceua(x0, fn, bl,bu,maxn,kstop,pcento,peps,ngs,iseed,iniflg)
 %% This is the subroutine implementing the SCE algorithm,
 % written by Q.Duan, 9/2004
 %
-% Definition:
-%  x0 = the initial parameter array at the start;
-%     = the optimized parameter array at the end;
-%  f0 = the objective function value corresponding to the initial parameters
-%     = the objective function value corresponding to the optimized parameters
-%  bl = the lower bound of the parameters
-%  bu = the upper bound of the parameters
-%  iseed = the random seed number (for repetetive testing purpose)
-%  iniflg = flag for initial parameter array (=1, included it in initial
-%           population; otherwise, not included)
-%  ngs = number of complexes (sub-populations)
-%  npg = number of members in a complex
-%  nps = number of members in a simplex
-%  nspl = number of evolution steps for each complex before shuffling
-%  mings = minimum number of complexes required during the optimization process
-%  maxn = maximum number of function evaluations allowed during optimization
-%  kstop = maximum number of evolution loops before convergency
-%  percento = the percentage change allowed in kstop loops before convergency
-%
 %% Update by Kong Dongdong, 20220607
+% add argument default values
+%
 % Require MATLAB ≥ 2019b
 % https://ww2.mathworks.cn/help/matlab/ref/arguments.html
+%
+%% Parameters:
+%  x0       = the initial parameter array at the start;
+%           = the optimized parameter array at the end;
+%  fn       = the objective function value corresponding to the initial parameters
+%           = the objective function value corresponding to the optimized parameters
+%  bl       = the lower bound of the parameters
+%  bu       = the upper bound of the parameters
+%  iseed    = the random seed number (for repetetive testing purpose)
+%  iniflg   = flag for initial parameter array (default 1, included it in initial
+%             population; otherwise, not included)
+%  ngs      = number of complexes (sub-populations)
+%  npg      = number of members in a complex
+%  nps      = number of members in a simplex
+%  nspl     = number of evolution steps for each complex before shuffling
+%  mings    = minimum number of complexes required during the optimization process
+%  maxn     = maximum number of function evaluations allowed during optimization
+%  kstop    = maximum number of evolution loops before convergency
+%  percento = the percentage change allowed in kstop loops before convergency
+%
+%% RETURN
+% `exitflag`:
+%  - `1`: 函数收敛于解 x。
+%  - `0`: 迭代次数超出 options.MaxIter 或函数计算次数超过 options.MaxFunEvals。
+% `- -1`: 算法由输出函数终止。
+%
+%%seealso fminsearch
+%
+%% Examples
+% ```MATLAB
+% [x, feval, exitflag, output] = sceua(x0, fn, bl, bu, maxn);
+% ```
 %
 %% References:
 % 1. https://www.rdocumentation.org/packages/rtop/versions/0.5-14/topics/sceua
 %
+% ```R
 % sceua(OFUN, pars, lower, upper, maxn = 10000, kstop = 5, pcento = 0.01,
 %   ngs = 5, npg = 5, nps = 5, nspl = 5, mings = 5, iniflg = 1, iprint = 0, iround = 3,
 %   peps = 0.0001, plog = rep(FALSE,length(pars)), implicit = NULL, timeout = NULL, ...)
+% ```
+% global BESTX BESTF ICALL PX PF
 arguments
     x0
     fn
@@ -49,6 +67,9 @@ arguments
     iseed    = -1
     iniflg   = 1
 end
+
+exitflag = -1;
+output = [];
 
 % LIST OF LOCAL VARIABLES
 %    x(.,.)    = coordinates of points in the population
@@ -72,9 +93,6 @@ end
 %    criter(.) = vector containing the best criterion values of the last
 %                10 shuffling loops
 
-
-global BESTX BESTF ICALL PX PF
-
 % Initialize SCE parameters:
 nopt=length(x0);
 npg=2*nopt+1;
@@ -97,7 +115,7 @@ if iniflg==1; x(1,:)=x0; end
 nloop=0;
 icall=0;
 for i=1:npt
-    xf(i) = fn(nopt,x(i,:));
+    xf(i) = fn(x(i,:)); % nopt
     icall = icall + 1;
 end
 f0=xf(1);
@@ -135,6 +153,7 @@ if icall >= maxn
 end
 
 if gnrng < peps
+    exitflag = 1;
     disp('THE POPULATION HAS CONVERGED TO A PRESPECIFIED SMALL PARAMETER SPACE');
 end
 
@@ -142,7 +161,7 @@ end
 criter=[];
 criter_change=1e+5;
 
-while icall<maxn && gnrng>peps && criter_change>pcento
+while icall < maxn && gnrng > peps && criter_change > pcento
     nloop=nloop+1;
     % Loop on complexes (sub-populations);
     for igs = 1: ngs
@@ -212,10 +231,12 @@ while icall<maxn && gnrng>peps && criter_change>pcento
 
     % Check for convergency;
     if icall >= maxn
+        exitflag = 0;
         disp('*** OPTIMIZATION SEARCH TERMINATED BECAUSE THE LIMIT');
         disp(['ON THE MAXIMUM NUMBER OF TRIALS ' num2str(maxn) ' HAS BEEN EXCEEDED!']);
     end
     if gnrng < peps
+        exitflag = 1;
         disp('THE POPULATION HAS CONVERGED TO A PRESPECIFIED SMALL PARAMETER SPACE');
     end
     criter=[criter;bestf];
@@ -223,6 +244,7 @@ while icall<maxn && gnrng>peps && criter_change>pcento
         criter_change=abs(criter(nloop)-criter(nloop-kstop+1))*100;
         criter_change=criter_change/mean(abs(criter(nloop-kstop+1:nloop)));
         if criter_change < pcento
+            exitflag = 1;
             disp(['THE BEST POINT HAS IMPROVED IN LAST ' num2str(kstop) ' LOOPS BY ', ...
                 'LESS THAN THE THRESHOLD ' num2str(pcento) '%']);
             disp('CONVERGENCY HAS ACHIEVED BASED ON OBJECTIVE FUNCTION CRITERIA!!!')

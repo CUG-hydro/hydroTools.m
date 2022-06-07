@@ -1,12 +1,7 @@
 clear;
 % global BESTX BESTF ICALL PX PF
 
-% ifunc=input('Enter the function number (1<=ifunc<=6): ');
-% ngs=input('Enter the number of complexes (def: ngs=2): ');
-% if isempty(ngs); ngs=2; end;
-ngs = 2;
-
-ifunc = 1;
+ifunc = 7;
 
 if ifunc==1
     % Goldstein-Price Function
@@ -60,12 +55,14 @@ if ifunc==7
     bl=zeros(1,6); bu=ones(1,6); x0=[0.201,0.150,0.477,0.275,0.311,0.657];
 end
 
-maxn=10000;
-kstop=10;
-pcento=0.1;
-peps=0.001;
-iseed=-1;
-iniflg=0;
+maxn   = 10000;
+% default parameters are OK
+kstop  = 10;
+pcento = 0.1;
+peps   = 0.001;
+iseed  = -1;
+iniflg = 0;
+ngs    = 2; % the number of complexes
 
-% [bestx,bestf] = sceua(x0, fn, bl,bu,maxn,kstop,pcento,peps,ngs,iseed,iniflg);
-[bestx,bestf] = sceua(x0, fn, bl, bu, maxn);
+% [bestx, bestf] = sceua(x0, fn, bl,bu,maxn,kstop,pcento,peps,ngs,iseed,iniflg);
+[bestx, bestf] = sceua(x0, fn, bl, bu, maxn);

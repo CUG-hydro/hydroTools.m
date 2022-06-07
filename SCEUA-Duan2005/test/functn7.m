@@ -1,4 +1,4 @@
-function f=functn(nopt,x)
+function f=functn(x)
 %
 %   This is the Hartman Function
 %   Bound: X(j)=[0,1], j=1,2,...,6
@@ -6,6 +6,8 @@ function f=functn(nopt,x)
 %   (0.201,0.150,0.477,0.275,0.311,0.657)
 %
 %   Data for Hartman function coefficients (6-D)
+nopt = length(x);
+
 a2=[10.,0.05,3.,17.;
     3.,10.,3.5,8.;
     17.,17.,1.7,.05;

@@ -1,5 +1,4 @@
-function f=functn(nopt,x)
-%
+function f=functn(x)
 %  This is the Shekel Function
 %  Bound: X(i)=[0,10], j=1,2,3,4
 %  Global Optimum:-10.5364098252,(4,4,4,4)
@@ -10,7 +9,8 @@ function f=functn(nopt,x)
           4.,1.,8.,6.,3.,2.,3.,8.,6.,7.; ...
           4.,1.,8.,6.,7.,9.,3.,1.,2.,3.6];
       c1 =[.1,.2,.2,.4,.4,.6,.3,.7,.5,.5];
-%
+nopt = length(x);
+
 f = 0.0;
 for i = 1:10
     u = 0.0;

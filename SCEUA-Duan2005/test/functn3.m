@@ -1,4 +1,4 @@
-function f=functn(nopt,x)
+function f=functn(x)
 %
 %  This is the Six-hump Camelback Function.
 %  Bound: X1=[-5,5], X2=[-5,5]

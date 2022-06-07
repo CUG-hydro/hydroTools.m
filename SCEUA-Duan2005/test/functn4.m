@@ -1,4 +1,4 @@
-function f=functn(nopt,x)
+function f=functn(x)
 %
 %  This is the Rastrigin Function 
 %  Bound: X1=[-1,1], X2=[-1,1]

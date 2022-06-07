@@ -1,9 +1,9 @@
-function f=functn(nopt,x)
+function f=functn(x)
 %
 %  This is the Griewank Function (2-D or 10-D)
 %  Bound: X(i)=[-600,600], for i=1,2,...,10
 %  Global Optimum: 0, at origin
-
+nopt = length(x);
 if nopt==2; d = 200; else d = 4000; end;
 
 u1 = 0.0;

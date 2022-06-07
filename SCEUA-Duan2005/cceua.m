@@ -40,19 +40,19 @@ s1=bu-snew; idx=find(s1<0, 1); if ~isempty(idx); ibound=2; end
 if ibound >=1
     snew = bl + rand(1,nopt).*(bu-bl);
 end
-fnew = fn(nopt,snew);
+fnew = fn(snew);
 icall = icall + 1;
 
 % Reflection failed; now attempt a contraction point:
 if fnew > fw
     snew = sw + beta*(ce-sw);
-    fnew = fn(nopt,snew);
+    fnew = fn(snew);
     icall = icall + 1;
 
 % Both reflection and contraction have failed, attempt a random point;
     if fnew > fw
         snew = bl + rand(1,nopt).*(bu-bl);
-        fnew = fn(nopt,snew);
+        fnew = fn(snew);
         icall = icall + 1;
     end
 end
