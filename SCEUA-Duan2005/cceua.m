@@ -1,5 +1,5 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-function [snew,fnew,icall]=cceua(s,sf,bl,bu,icall,maxn)
+function [snew,fnew,icall]=cceua(fn, s,sf,bl,bu,icall,maxn)
 %  This is the subroutine for generating a new point in a simplex
 %
 %   s(.,.) = the sorted simplex in order of increasing function values
@@ -34,28 +34,28 @@ snew = ce + alpha*(ce-sw);
 
 % Check if is outside the bounds:
 ibound=0;
-s1=snew-bl; idx=find(s1<0); if ~isempty(idx); ibound=1; end;
-s1=bu-snew; idx=find(s1<0); if ~isempty(idx); ibound=2; end;
+s1=snew-bl; idx=find(s1<0, 1); if ~isempty(idx); ibound=1; end
+s1=bu-snew; idx=find(s1<0, 1); if ~isempty(idx); ibound=2; end
 
-if ibound >=1; 
+if ibound >=1
     snew = bl + rand(1,nopt).*(bu-bl);
-end;
-fnew = functn(nopt,snew);
+end
+fnew = fn(nopt,snew);
 icall = icall + 1;
 
 % Reflection failed; now attempt a contraction point:
-if fnew > fw;
+if fnew > fw
     snew = sw + beta*(ce-sw);
-    fnew = functn(nopt,snew);
+    fnew = fn(nopt,snew);
     icall = icall + 1;
 
 % Both reflection and contraction have failed, attempt a random point;
-    if fnew > fw;
+    if fnew > fw
         snew = bl + rand(1,nopt).*(bu-bl);
-        fnew = functn(nopt,snew);
+        fnew = fn(nopt,snew);
         icall = icall + 1;
-    end;
-end;
+    end
+end
 
 % END OF CCE
 return;
