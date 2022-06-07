@@ -1,7 +1,9 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function [bestx,bestf] = sceua(x0,bl,bu,maxn,kstop,pcento,peps,ngs,iseed,iniflg)
 
-% This is the subroutine implementing the SCE algorithm, 
+% functn
+
+% This is the subroutine implementing the SCE algorithm,
 % written by Q.Duan, 9/2004
 %
 % Definition:
@@ -15,7 +17,7 @@ function [bestx,bestf] = sceua(x0,bl,bu,maxn,kstop,pcento,peps,ngs,iseed,iniflg)
 %  iniflg = flag for initial parameter array (=1, included it in initial
 %           population; otherwise, not included)
 %  ngs = number of complexes (sub-populations)
-%  npg = number of members in a complex 
+%  npg = number of members in a complex
 %  nps = number of members in a simplex
 %  nspl = number of evolution steps for each complex before shuffling
 %  mings = minimum number of complexes required during the optimization process
@@ -27,20 +29,23 @@ function [bestx,bestf] = sceua(x0,bl,bu,maxn,kstop,pcento,peps,ngs,iseed,iniflg)
 
 % https://ww2.mathworks.cn/help/matlab/ref/arguments.html
 % Require MATLAB ≥ 2019b
-% 
+%
 %% References:
 % 1. https://www.rdocumentation.org/packages/rtop/versions/0.5-14/topics/sceua
-% 
+%
 % sceua(OFUN, pars, lower, upper, maxn = 10000, kstop = 5, pcento = 0.01,
-%   ngs = 5, npg = 5, nps = 5, nspl = 5, mings = 5, iniflg = 1, iprint = 0, iround = 3, 
+%   ngs = 5, npg = 5, nps = 5, nspl = 5, mings = 5, iniflg = 1, iprint = 0, iround = 3,
 %   peps = 0.0001, plog = rep(FALSE,length(pars)), implicit = NULL, timeout = NULL, ...)
 arguments
+    x0
+    bl
+    bu
     maxn = 500
     kstop = 5
     pcento = 0.01
     peps = 0.0001
     ngs = 5
-    iseed 
+    iseed = -1
     iniflg = 1
 end
 
@@ -82,18 +87,18 @@ bound = bu-bl;
 % Create an initial population to fill array x(npt,nopt):
 rand('seed',iseed);
 x=zeros(npt,nopt);
-for i=1:npt;
+for i=1:npt
     x(i,:)=bl+rand(1,nopt).*bound;
-end;
+end
 
-if iniflg==1; x(1,:)=x0; end;
+if iniflg==1; x(1,:)=x0; end
 
 nloop=0;
 icall=0;
-for i=1:npt;
+for i=1:npt
     xf(i) = functn(nopt,x(i,:));
     icall = icall + 1;
-end;
+end
 f0=xf(1);
 
 % Sort the population in order of increasing function values;
@@ -112,88 +117,86 @@ xnstd=std(x);
 gnrng=exp(mean(log((max(x)-min(x))./bound)));
 
 disp('The Initial Loop: 0');
-disp(['BESTF  : ' num2str(bestf)]);
-disp(['BESTX  : ' num2str(bestx)]);
-disp(['WORSTF : ' num2str(worstf)]);
-disp(['WORSTX : ' num2str(worstx)]);
+disp(['BESTF  : ' num2str(bestf), '; ' 'BESTX  : [' num2str(bestx), ']']);
+disp(['WORSTF : ' num2str(worstf), '; ' 'WORSTX : [' num2str(worstx), ']']);
 disp(' ');
 
 % Check for convergency;
-if icall >= maxn;
+if icall >= maxn
     disp('*** OPTIMIZATION SEARCH TERMINATED BECAUSE THE LIMIT');
     disp('ON THE MAXIMUM NUMBER OF TRIALS ');
     disp(maxn);
     disp('HAS BEEN EXCEEDED.  SEARCH WAS STOPPED AT TRIAL NUMBER:');
     disp(icall);
     disp('OF THE INITIAL LOOP!');
-end;
+end
 
-if gnrng < peps;
+if gnrng < peps
     disp('THE POPULATION HAS CONVERGED TO A PRESPECIFIED SMALL PARAMETER SPACE');
-end;
+end
 
 % Begin evolution loops:
 nloop = 0;
 criter=[];
 criter_change=1e+5;
 
-while icall<maxn & gnrng>peps & criter_change>pcento;
+while icall<maxn & gnrng>peps & criter_change>pcento
     nloop=nloop+1;
-    
+
     % Loop on complexes (sub-populations);
-    for igs = 1: ngs;
-    
+    for igs = 1: ngs
+
         % Partition the population into complexes (sub-populations);
         k1=1:npg;
         k2=(k1-1)*ngs+igs;
         cx(k1,:) = x(k2,:);
         cf(k1) = xf(k2);
-        
+
         % Evolve sub-population igs for nspl steps:
-        for loop=1:nspl;
-            
+        for loop=1:nspl
+
             % Select simplex by sampling the complex according to a linear
             % probability distribution
             lcs(1) = 1;
-            for k3=2:nps;
-                for iter=1:1000;
+            for k3=2:nps
+                for iter=1:1000
                     lpos = 1 + floor(npg+0.5-sqrt((npg+0.5)^2 - npg*(npg+1)*rand));
                     idx=find(lcs(1:k3-1)==lpos); if isempty(idx); break; end;
-                end;
+                end
                 lcs(k3) = lpos;
-            end;
+            end
             lcs=sort(lcs);
 
             % Construct the simplex:
             s = zeros(nps,nopt);
             s=cx(lcs,:); sf = cf(lcs);
-            
+
             [snew,fnew,icall]=cceua(s,sf,bl,bu,icall,maxn);
 
             % Replace the worst point in Simplex with the new point:
             s(nps,:) = snew; sf(nps) = fnew;
-            
+
             % Replace the simplex into the complex;
             cx(lcs,:) = s;
             cf(lcs) = sf;
-            
+
             % Sort the complex;
             [cf,idx] = sort(cf); cx=cx(idx,:);
-            
-        % End of Inner Loop for Competitive Evolution of Simplexes
-        end;
+
+            % End of Inner Loop for Competitive Evolution of Simplexes
+        end
 
         % Replace the complex back into the population;
         x(k2,:) = cx(k1,:);
         xf(k2) = cf(k1);
-    
-    % End of Loop on Complex Evolution;
-    end;
-    
+
+        % End of Loop on Complex Evolution;
+    end
+
     % Shuffled the complexes;
     [xf,idx] = sort(xf); x=x(idx,:);
     PX=x; PF=xf;
-    
+
     % Record the best and worst points;
     bestx=x(1,:); bestf=xf(1);
     worstx=x(npt,:); worstf=xf(npt);
@@ -205,41 +208,39 @@ while icall<maxn & gnrng>peps & criter_change>pcento;
     % Computes the normalized geometric range of the parameters
     gnrng=exp(mean(log((max(x)-min(x))./bound)));
 
-    disp(['Evolution Loop: ' num2str(nloop) '  - Trial - ' num2str(icall)]);
-    disp(['BESTF  : ' num2str(bestf)]);
-    disp(['BESTX  : ' num2str(bestx)]);
-    disp(['WORSTF : ' num2str(worstf)]);
-    disp(['WORSTX : ' num2str(worstx)]);
+    disp(['Evolution Loop: ' num2str(nloop) ', Trial: ' num2str(icall)]);
+    disp(['BESTF  : ' num2str(bestf), '; ' 'BESTX  : [' num2str(bestx), ']']);
+    disp(['WORSTF : ' num2str(worstf), '; ' 'WORSTX : [' num2str(worstx), ']']);
     disp(' ');
 
     % Check for convergency;
-    if icall >= maxn;
+    if icall >= maxn
         disp('*** OPTIMIZATION SEARCH TERMINATED BECAUSE THE LIMIT');
         disp(['ON THE MAXIMUM NUMBER OF TRIALS ' num2str(maxn) ' HAS BEEN EXCEEDED!']);
-    end;
+    end
 
-    if gnrng < peps;
+    if gnrng < peps
         disp('THE POPULATION HAS CONVERGED TO A PRESPECIFIED SMALL PARAMETER SPACE');
-    end;
+    end
 
     criter=[criter;bestf];
-    if (nloop >= kstop);
+    if (nloop >= kstop)
         criter_change=abs(criter(nloop)-criter(nloop-kstop+1))*100;
         criter_change=criter_change/mean(abs(criter(nloop-kstop+1:nloop)));
-        if criter_change < pcento;
+        if criter_change < pcento
             disp(['THE BEST POINT HAS IMPROVED IN LAST ' num2str(kstop) ' LOOPS BY ', ...
-                  'LESS THAN THE THRESHOLD ' num2str(pcento) '%']);
+                'LESS THAN THE THRESHOLD ' num2str(pcento) '%']);
             disp('CONVERGENCY HAS ACHIEVED BASED ON OBJECTIVE FUNCTION CRITERIA!!!')
-        end;
-    end;
-    
-% End of the Outer Loops
-end;
+        end
+    end
+
+    % End of the Outer Loops
+end
 
 disp(['SEARCH WAS STOPPED AT TRIAL NUMBER: ' num2str(icall)]);
 disp(['NORMALIZED GEOMETRIC RANGE = ' num2str(gnrng)]);
 disp(['THE BEST POINT HAS IMPROVED IN LAST ' num2str(kstop) ' LOOPS BY ', ...
-       num2str(criter_change) '%']);
+    num2str(criter_change) '%']);
 
 % END of Subroutine sceua
 return;

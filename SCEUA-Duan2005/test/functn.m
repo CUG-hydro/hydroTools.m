@@ -1,17 +1,17 @@
-function f=functn(nopt,x)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+function f = functn(nopt,x)
 %
-%  This is the Griewank Function (2-D or 10-D)
-%  Bound: X(i)=[-600,600], for i=1,2,...,10
-%  Global Optimum: 0, at origin
-
-if nopt==2; d = 200; else d = 4000; end;
-
-u1 = 0.0;
-u2 = 1.0;
-for j = 1:nopt
-    u1 = u1 + x(j)^2 / d;
-    u2 = u2 * cos(x(j)/sqrt(j));
-end
-f = u1 - u2 + 1;
-
+% This is the Goldstein-Price Function
+% Bound X1=[-2,2], X2=[-2,2]
+% Global Optimum: 3.0,(0.0,-1.0)
+%      
+x1 = x(1);
+x2 = x(2);
+u1 = (x1 + x2 + 1.0)^2;
+u2 = 19. - 14.*x1 + 3.*x1^2 - 14.*x2 + 6.*x1*x2 +3.*x2^2;
+u3 = (2.*x1 - 3.*x2)^2;
+u4 = 18. - 32.*x1 + 12.*x1^2 + 48.*x2 -36.*x1*x2 + 27.*x2^2;
+u5 = u1 * u2;
+u6 = u3 * u4;
+f = (1. + u5) * (30. + u6);
 return

@@ -86,3 +86,21 @@ function pop = RunCCE(pop, params)
     end
     
 end
+
+function b = IsInRange(x, VarMin, VarMax)
+    b = all(x>=VarMin) && all(x<=VarMax);
+end
+
+
+function L = RandSample(P, q, replacement)
+    if ~exist('replacement','var')
+        replacement = false;
+    end
+    L = zeros(q,1);
+    for i=1:q
+        L(i) = randsample(numel(P), 1, true, P);
+        if ~replacement
+            P(L(i)) = 0;
+        end
+    end
+end

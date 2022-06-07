@@ -11,14 +11,16 @@
 % Contact Info: sm.kalami@gmail.com, info@yarpiz.com
 %
 
-clc;
-clear;
-close all;
+% clc;
+% clear;
+% close all;
 
-%% Problem Definition
+% %% Problem Definition
 
-% Objective Function
-CostFunction = @(x) Sphere(x);
+% % Objective Function
+% CostFunction = @(x) Sphere(x);
+
+
 
 nVar = 10;              % Number of Unknown Variables
 VarSize = [1 nVar];     % Unknown Variables Matrix Size
