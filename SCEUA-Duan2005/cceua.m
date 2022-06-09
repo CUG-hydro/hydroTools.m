@@ -49,7 +49,7 @@ if fnew > fw
     fnew = fn(snew);
     icall = icall + 1;
 
-% Both reflection and contraction have failed, attempt a random point;
+    % Both reflection and contraction have failed, attempt a random point;
     if fnew > fw
         snew = bl + rand(1,nopt).*(bu-bl);
         fnew = fn(snew);
@@ -57,5 +57,4 @@ if fnew > fw
     end
 end
 
-% END OF CCE
 return;

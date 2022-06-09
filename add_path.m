@@ -1,4 +1,5 @@
 addpath('SCEUA-Duan2005')
 addpath('SCEUA-Yarpiz2015')
+addpath('.')
 
 savepath

@@ -1,6 +1,9 @@
-# SCEUA-Julia
+# HydroTools in MATLAB
 
-Shuffled Complex Evolution (SCE-UA) algorithm implemented in MATLAB
+<https://github.com/CUG-hydro/hydroTools.m>
+
+- Shuffled Complex Evolution (SCE-UA) optimization algorithm
+
 
 # References
 
